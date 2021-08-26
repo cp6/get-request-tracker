@@ -1,6 +1,6 @@
 # GET request tracker
 
-Do cURL GET requests with connection/response details saved to database with the ability to save response data.
+Do cURL GET requests with connection/response details saved to database with the ability to save response data into file.
 
 ### Requires
 
