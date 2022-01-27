@@ -5,20 +5,28 @@
 /*!40101 SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES = @@SQL_NOTES, SQL_NOTES = 0 */;
 
-CREATE DATABASE IF NOT EXISTS `get_requester` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
-USE `get_requester`;
+CREATE DATABASE IF NOT EXISTS `get_request_tracker` /*!40100 DEFAULT CHARACTER SET utf8mb4 */;
+USE `get_request_tracker`;
 
-CREATE TABLE IF NOT EXISTS `tasks`
+CREATE TABLE IF NOT EXISTS `requests`
 (
-    `id`           int(11)      NOT NULL AUTO_INCREMENT,
-    `response`     int(11)      NOT NULL,
-    `size`         int(11)      NOT NULL,
-    `connect_time` float        DEFAULT NULL,
-    `total_time`   int(11)      DEFAULT NULL,
-    `url`          varchar(999) NOT NULL,
-    `save_as`      varchar(255) DEFAULT NULL,
-    `datetime`     datetime     NOT NULL,
+    `id`           int(11)                                     NOT NULL AUTO_INCREMENT,
+    `response`     int(11)                                     NOT NULL,
+    `size`         int(11)                                              DEFAULT NULL,
+    `connect_time` float                                                DEFAULT NULL,
+    `total_time`   int(11)                                              DEFAULT NULL,
+    `saved_as`     varchar(255) CHARACTER SET utf8 COLLATE utf8_bin     DEFAULT NULL,
+    `url_uid`      char(8) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+    `datetime`     datetime                                    NOT NULL DEFAULT current_timestamp(),
     PRIMARY KEY (`id`)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4;
+
+CREATE TABLE IF NOT EXISTS `request_urls`
+(
+    `uid` char(8) CHARACTER SET utf8 COLLATE utf8_bin      NOT NULL,
+    `url` varchar(255) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+    PRIMARY KEY (`uid`, `url`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
 

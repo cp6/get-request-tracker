@@ -1,0 +1,22 @@
+{
+  "name": "corbpie/get-request-tracker",
+  "description": "Saves cURL GET requests",
+  "type": "project",
+  "autoload": {
+    "psr-4": {
+      "": "src/"
+    }
+  },
+  "authors": [
+    {
+      "name": "corbpie",
+      "email": "contact@corbpie.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=8.0",
+    "ext-pdo": "*",
+    "ext-curl": "*"
+  }
+}
