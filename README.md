@@ -1,29 +1,38 @@
 # GET request tracker
 
-Do cURL GET requests with connection/response details saved to database with the ability to save response data into file.
+Do PHP cURL GET requests with connection and response details saved to database with the ability to save the request response data into file.
 
 ### Requires
 
 * PHP version >= 8.0
 * PHP ext-curl
+* PHP ext-pdo
 
 ## Usage
 
-Run `get_requester.sql` into MySQL server.
+Run `get_requester.sql` into your MySQL server.
 
-Edit connection details line 5 `callCurl.php`.
+Edit DB connection details line 5-8 `src/getTracker.php`.
 
-To use the function:
+Edit cURL call settings line 17-21 `src/getTracker.php`.
+
+Edit cURL GET request user agents line 12 `src/getTracker.php`.
+
+To use:
 
 ```php
-require_once('callCurl.php');
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
+
+$get = new getTracker();
 ```
 
 #### Examples
 
 ```php
-$url = "https://website.com/api/user/?id=xyz";
-echo json_encode(callCurl($url));
+$get->url = 'https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json';
+
+echo json_encode($get->doGET());
 ```
 
 Will return similar to:
