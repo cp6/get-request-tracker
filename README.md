@@ -14,7 +14,7 @@ Run `get_requester.sql` into your MySQL server.
 
 Edit DB connection details line 5-8 `src/getTracker.php`.
 
-Edit cURL call settings line 17-21 `src/getTracker.php`.
+Edit cURL call settings line 18-22 `src/getTracker.php`.
 
 Edit cURL GET request user agents line 12 `src/getTracker.php`.
 
@@ -47,11 +47,14 @@ Will return similar to:
 }
 ```
 
-Save the returned data into `xyz.json`
+Save the returned data into `data/scoreboard.json`
 
 ```php
-$url = "https://website.com/api/user/?id=xyz";
-echo json_encode(callCurl($url, 'xyz.json'));
+$get->url = 'https://cdn.nba.com/static/json/liveData/scoreboard/todaysScoreboard_00.json';
+
+$get->save_as = 'data/scoreboard.json';
+
+$get->doGET();
 ```
 
 Will return similar to:
@@ -62,15 +65,6 @@ Will return similar to:
   "size": 126,
   "connect_time": 1.008247,
   "total_time": 1782657,
-  "saved_as": "xyz.json"
-}
-```
-
-**If connection times out**
-
-```json
-{
-  "http_code": 408,
-  "message": "Response timed out"
+  "saved_as": "data/scoreboard.json"
 }
 ```
