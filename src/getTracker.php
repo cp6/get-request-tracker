@@ -13,6 +13,7 @@ class getTracker
     public array $headers;
 
     public string $save_as = '';
+    public string $fopen_mode = 'wb';
 
     public string $curl_encoding = "gzip,deflate";
     public int $curl_connect_timeout = 8;
@@ -22,10 +23,11 @@ class getTracker
 
     private int $response_code;
     private string $response_size;
+    private string $response_ip;
+    private string $request_ip;
     private float $connect_time;
     private int $total_time;
     private array $response_data;
-
 
     private function dbConnect(): pdo
     {
@@ -57,6 +59,15 @@ class getTracker
 
         $response_data = curl_exec($curl);
 
+        $this->response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
+        $this->response_size = curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
+        $this->connect_time = curl_getinfo($curl, CURLINFO_CONNECT_TIME);
+        $this->total_time = curl_getinfo($curl, CURLINFO_TOTAL_TIME_T);
+        $this->response_ip = curl_getinfo($curl, CURLINFO_PRIMARY_IP);
+        $this->request_ip = curl_getinfo($curl, CURLINFO_LOCAL_IP);
+
+        echo json_encode(curl_getinfo($curl));
+
         if (curl_errno($curl) === CURLE_OPERATION_TIMEDOUT) {
             $called_request_responses = array(
                 'http_code' => 408,
@@ -64,20 +75,18 @@ class getTracker
                 'connect_time' => null,
                 'total_time' => null,
                 'saved_as' => $this->save_as,
-                'url' => $this->url
+                'url' => $this->url,
+                'request_ip' => $this->request_ip,
+                'response_ip' => $this->response_ip,
             );
             $this->insertRequestDetails($called_request_responses);
             return $called_request_responses;
         }
-        $this->response_code = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-        $this->response_size = curl_getinfo($curl, CURLINFO_CONTENT_LENGTH_DOWNLOAD);
-        $this->connect_time = curl_getinfo($curl, CURLINFO_CONNECT_TIME);
-        $this->total_time = curl_getinfo($curl, CURLINFO_TOTAL_TIME_T);
 
         curl_close($curl);
 
         if ($this->response_code === 200 && $this->save_as !== '') {
-            $fp = fopen($this->save_as, 'wb');
+            $fp = fopen($this->save_as, $this->fopen_mode);
             fwrite($fp, $response_data);
             fclose($fp);
         }
@@ -90,7 +99,9 @@ class getTracker
             'connect_time' => $this->connect_time,
             'total_time' => $this->total_time,
             'saved_as' => $this->save_as,
-            'url' => $this->url
+            'url' => $this->url,
+            'request_ip' => $this->request_ip,
+            'response_ip' => $this->response_ip,
         );
 
         $this->insertRequestDetails($called_request_responses);
@@ -109,20 +120,20 @@ class getTracker
         return $the_string;
     }
 
-    private function insertRequestDetails(array $request_data): bool
+    private function insertRequestDetails(array $request_data): void
     {
         $uid = $this->insertUrlIfNotExists($request_data['url']);
         $request_data['url'] = $uid;
         if ($request_data['saved_as'] === '') {
             $request_data['saved_as'] = null;
         }
-        return $this->insertRequest(array_values($request_data));
+        $this->insertRequest(array_values($request_data));
     }
 
-    private function insertRequest(array $request_data): bool
+    private function insertRequest(array $request_data): void
     {
-        $insert = $this->dbConnect()->prepare("INSERT INTO `requests` (`response`, `size`, `connect_time`, `total_time`, `saved_as`, `url_uid`) VALUES (?, ?, ?, ?, ?, ?);");
-        return $insert->execute($request_data);
+        $insert = $this->dbConnect()->prepare("INSERT INTO `requests` (`response`, `size`, `connect_time`, `total_time`, `saved_as`, `url_uid`, request_ip, response_ip) VALUES (?, ?, ?, ?, ?, ?, ?, ?);");
+        $insert->execute($request_data);
     }
 
     private function insertUrlIfNotExists(string $url): string
@@ -138,6 +149,5 @@ class getTracker
         $insert_uid->execute([$uid, $url]);
         return $uid;
     }
-
 
 }
