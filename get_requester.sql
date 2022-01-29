@@ -18,6 +18,8 @@ CREATE TABLE IF NOT EXISTS `requests`
     `saved_as`     varchar(255) CHARACTER SET utf8 COLLATE utf8_bin     DEFAULT NULL,
     `url_uid`      char(8) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
     `datetime`     datetime                                    NOT NULL DEFAULT current_timestamp(),
+    `request_ip`   varchar(255)                                         DEFAULT NULL,
+    `response_ip`  varchar(255)                                         DEFAULT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE = InnoDB
   DEFAULT CHARSET = utf8mb4;
